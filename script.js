@@ -7,18 +7,19 @@ window.addEventListener("load", function() {
    let cargoMass = document.querySelector("input[name=cargoMass]");
    let formSubmit = document.getElementById("formSubmit");
    let launchStatus = document.getElementById("launchStatus");
-   let faultyItems = document.getElementById("faultyItems");
-   let pilotStatus = document.getElementById("pilotStatus");
-   let copilotStatus = document.getElementById("copilotStatus");
-   let fuelStatus = document.getElementById("fuelStatus");
-   let cargoStatus = document.getElementById("cargoStatus");
+   let faultyUpdate = document.getElementById("faultyItems");
+   let finalPilotStatus = document.getElementById("pilotStatus");
+   let finalCopilotStatus = document.getElementById("copilotStatus");
+   let finalFuelStatus = document.getElementById("fuelStatus");
+   let finalCargoStatus = document.getElementById("cargoStatus");
+   
  form.addEventListener("submit", function(event) {
       
       if (pilotName.value === "" || copilotName.value === "" || fuelLevel.value === "" || cargoMass.value === ""){
          alert("All fields are required!");
          event.preventDefault();
       }
-      if(typeof(pilotName.value) !== 'string' || typeof(copilotName.value) !== 'string'){
+      if(isNaN(pilotName.value) === false || isNaN(copilotName.value) === false){
          alert("Make sure to enter valid information for each field!");
          event.preventDefault();
       }
@@ -26,40 +27,41 @@ window.addEventListener("load", function() {
          alert("Make sure to enter valid information for each field!");
          event.preventDefault();
       }
-   });  
- formSubmit.addEventListener("submit", function(){
-    faultyItems.innerHTML = 
-    `<div>
-    <ol>
-      <li id="pilotStatus">Pilot ${pilotName.value} Ready</li>
-      <li id="copilotStatus">Co-pilot ${copilotName.value} Ready</li>
-      <li id="fuelStatus">Fuel level high enough for launch</li>
-      <li id="cargoStatus">Cargo mass low enough for launch</li>
-    </ol>
-     </div>`;
+   }); 
+   formSubmit.addEventListener("click", function(){
+      finalPilotStatus.innerHTML = `Pilot ${pilotName.value} Ready`;
+      finalCopilotStatus.innerHTML = `Co-pilot ${copilotName.value} Ready`;
 
-   if(fuelLevel < 10000){
-      faultyItems.style.visibility = 'visable';
-      fuelStatus.innerHTML = "Fuel level too low for launch";
-      launchStatus.innerHTML = "Shuttle Not Ready for Launch";
-      launchStatus.style.color = "red";
-   }
-   if(cargoMass > 10000){
-      faultyItems.style.visibility = 'visable';
-      cargoStatus.innerHTML = "Cargo mass too high for launch";
-      launchStatus.innerHTML = "Shuttle Not Ready for Launch";
-      launchStatus.style.color = "red";
-   }else{
-      launchStatus.innerHTML = "Shuttle Ready for Launch";
-      launchStatus.style.color = "green";
-   }
-  });
-
+      if(fuelLevel.value < 10000){
+         faultyUpdate.style.visibility = 'visible';
+         finalFuelStatus.innerHTML = "Fuel level too low for launch";
+         launchStatus.innerHTML = "Shuttle Not Ready for Launch";
+         launchStatus.style.color = "red";
+         event.preventDefault();
+      }
+      if(cargoMass.value > 10000){
+         faultyUpdate.style.visibility = 'visible';
+         finalCargoStatus.innerHTML = "Cargo mass too high for launch";
+         launchStatus.innerHTML = "Shuttle Not Ready for Launch";
+         launchStatus.style.color = "red";
+         event.preventDefault();
+      }
+      if(cargoMass.value < 10000 && fuelLevel.value > 10000){
+         faultyUpdate.style.visibility = 'visible';
+         launchStatus.innerHTML = "Shuttle Ready for Launch";
+         launchStatus.style.color = "green";
+         finalFuelStatus.innerHTML = "Fuel level high enough for launch";
+         finalCargoStatus.innerHTML = "Cargo level low enough for launch";
+         event.preventDefault();
+      }
+      
+     });
+   
  fetch("https://handlers.education.launchcode.org/static/planets.json").then(function(response){
                 response.json().then( function(json) { 
                 const destination = document.getElementById("missionTarget"); 
                 destination.innerHTML = 
-                 `<div>
+                 `<div style="text-align: center;">
                     <h2>Mission Destination</h2>
                   <ol>
                       <li>Name: ${json[0].name}</li>
@@ -72,6 +74,8 @@ window.addEventListener("load", function() {
                 </div>`;
                 });
                });
-});           
+               
+});     
 
+         
 
